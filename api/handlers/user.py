@@ -22,7 +22,9 @@ def get_users():
 def create_user():
     user_data = request.json
     user = UserModel(**user_data)
-    # TODO: добавить обработчик на создание пользователя с неуникальным username
+    user_in_db = UserModel.query.filter_by(username=user.username).first()
+    if user_in_db:
+        return {"error": "User already exist"}, 409
     user.save()
     return user_schema.dump(user), 201
 

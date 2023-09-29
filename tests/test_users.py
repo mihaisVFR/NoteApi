@@ -15,6 +15,7 @@ def test_user_get_by_id(client, user):
     response = client.get('/users/1')
     assert response.status_code == 200
     assert response.json["username"] == user.username
+    assert len(response.json) != 3
 
 
 def test_user_not_found(client, user):
