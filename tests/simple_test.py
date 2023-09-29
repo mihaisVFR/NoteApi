@@ -2,14 +2,14 @@ import pytest
 
 
 def test_simple():
-    mylist= [1,2,3,4,5]
+    mylist = [1, 2, 3, 4, 5]
     assert 1 in mylist
 
 
 class Person:
-    def __init__(self,name, age):
-        self.name=name
-        self.age=age
+    def __init__(self, name, age):
+        self.name = name
+        self.age = age
 
     def __repr__(self):
         return f"{self.name, self.age}"
