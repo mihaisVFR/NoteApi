@@ -15,6 +15,7 @@ marshmallow-sqlalchemy = "*"
 passlib = "*"
 flask-httpauth = "*"
 itsdangerous = "*"
+pytest = "*"
 
 [dev-packages]
 
