@@ -30,6 +30,14 @@ def user_admin():
 
 
 @pytest.fixture()
+def user():
+    user_data = {"username": "testuser", "password": "1234"}
+    user = UserModel(**user_data)
+    user.save()
+    return user
+
+
+@pytest.fixture()
 def auth_headers(user_admin):
     user_data = {"username": "admin", "password": "admin", "role": "admin"}
     headers = {
@@ -44,5 +52,13 @@ def auth_headers_user(user):
     headers = {
         'Authorization': 'Basic ' + b64encode(
             f"{user_data['username']}:{user_data['password']}".encode('ascii')).decode('utf-8')
+    }
+    return headers
+
+@pytest.fixture()
+def auth_headers_token(user_admin):
+    token = user_admin.generate_auth_token()
+    headers = {
+        'Authorization': 'Bearer ' + token
     }
     return headers
