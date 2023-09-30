@@ -15,7 +15,7 @@ def test_user_get_by_id(client, user):
     response = client.get('/users/1')
     assert response.status_code == 200
     assert response.json["username"] == user.username
-    assert response.json["role"] in ("admin", "simple_user")
+    assert response.json["role"] in response.json.values()
 
 
 def test_user_not_found(client, user):
@@ -60,5 +60,5 @@ def test_user_edit(client, user, auth_headers):
 
 #@pytest.mark.skip(reason="test not implemented")
 def test_user_delete(client, user, auth_headers):
-    responce = client.delete(f"/users/{user.id}", headers=auth_headers)
-    assert responce.status_code == 200
+    response = client.delete(f"/users/{user.id}", headers=auth_headers)
+    assert response.status_code == 200

@@ -11,7 +11,10 @@ def test_basic_auth(client, auth_headers, user_admin):
     assert data["token"] == user_admin.generate_auth_token()
 
 
-@pytest.mark.skip(reason="test not implemented")
-def test_token_auth(client):
-    pass
+#@pytest.mark.skip(reason="test not implemented")
+def test_token_auth(client, auth_headers):
+    response = client.get('/auth/token', headers=auth_headers)
+    data = response.json
+    assert data["token"] is not None
+    assert response.status_code == 200
     # Пока отложим реализацию данного теста

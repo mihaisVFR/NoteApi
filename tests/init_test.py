@@ -37,3 +37,12 @@ def auth_headers(user_admin):
             f"{user_data['username']}:{user_data['password']}".encode('ascii')).decode('utf-8')
     }
     return headers
+
+@pytest.fixture()
+def auth_headers_user(user):
+    user_data = {"username": "testuser", "password": "1234"}
+    headers = {
+        'Authorization': 'Basic ' + b64encode(
+            f"{user_data['username']}:{user_data['password']}".encode('ascii')).decode('utf-8')
+    }
+    return headers
