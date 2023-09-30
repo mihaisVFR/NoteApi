@@ -16,6 +16,9 @@ passlib = "*"
 flask-httpauth = "*"
 itsdangerous = "*"
 pytest = "*"
+flasgger = "*"
+apispec = "*"
+flask-apispec = "*"
 
 [dev-packages]
 
