@@ -75,13 +75,8 @@ def test_note_creation(client, auth_headers):
 
 
 def test_note_edit(client, note_admin, auth_headers):
-    note_edit_data = {
-        "text": "Edited note"
-    }
-    response = client.put(f'/notes/{note_admin.id}',
-                          json=note_edit_data,
-                          headers=auth_headers,
-                          )
+    note_edit_data = {"text": "Edited note"}
+    response = client.put(f'/notes/{note_admin.id}', json=note_edit_data, headers=auth_headers)
     data = response.json
     assert response.status_code == 200
     assert data["text"] == note_edit_data["text"]
