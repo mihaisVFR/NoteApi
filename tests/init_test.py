@@ -55,6 +55,7 @@ def auth_headers_user(user):
     }
     return headers
 
+
 @pytest.fixture()
 def auth_headers_token(user_admin):
     token = user_admin.generate_auth_token()

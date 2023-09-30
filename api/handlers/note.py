@@ -2,24 +2,30 @@ from api import app, multi_auth, request
 from api.models.note import NoteModel
 from api.schemas.note import note_schema, notes_schema
 from utility.helpers import get_object_or_404
+from sqlalchemy import or_
 
 
 @app.route("/notes/<int:note_id>", methods=["GET"])
 @multi_auth.login_required
 def get_note_by_id(note_id):
-    # TODO: авторизованный пользователь может получить только свою заметку или публичную заметку других пользователей
+    # DONE: авторизованный пользователь может получить только свою заметку или публичную заметку других пользователей
     #  Попытка получить чужую приватную заметку, возвращает ответ с кодом 403
     user = multi_auth.current_user()
     note = get_object_or_404(NoteModel, note_id)
-    return note_schema.dump(note), 200
+    if note.author_id == user.id or not note.private:
+        return note_schema.dump(note), 200
+    return {"Error": "This note can't be showed, because it owned other person"}, 403
+
 
 
 @app.route("/notes", methods=["GET"])
 @multi_auth.login_required
 def get_notes():
-    # TODO: авторизованный пользователь получает только свои заметки и публичные заметки других пользователей
+    # DONE: авторизованный пользователь получает только свои заметки и публичные заметки других пользователей
     user = multi_auth.current_user()
-    notes = NoteModel.query.all()
+    notes = NoteModel.query.filter(
+        or_(NoteModel.author_id == user.id, NoteModel.private == False))
+
     return notes_schema.dump(notes), 200
 
 
@@ -45,7 +51,7 @@ def edit_note(note_id):
         note.private = note_data.get("private") or note.private
         note.save()
         return note_schema.dump(note), 200
-    return {"error": "This note can't be changed, because it owned other person"}, 403
+    return {"Error": "This note can't be changed, because it owned other person"}, 403
 
 
 @app.route("/notes/<int:note_id>", methods=["DELETE"])
