@@ -22,8 +22,7 @@ def get_users():
 def create_user():
     user_data = request.json
     user = UserModel(**user_data)
-    user_in_db = UserModel.query.filter_by(username=user.username).first()
-    if user_in_db:
+    if UserModel.query.filter_by(username=user.username).one_or_none():
         return {"error": "User already exist"}, 409
     user.save()
     return user_schema.dump(user), 201
@@ -43,6 +42,8 @@ def edit_user(user_id):
 @multi_auth.login_required(role="admin")
 def delete_user(user_id):
     """
-    Пользователь может удалять ТОЛЬКО свои заметки
+    Админ удаляет Пользователя  ТОЛЬКО со своими заметками
     """
-    raise NotImplemented("Метод не реализован")
+    user = get_object_or_404(UserModel, user_id)
+    user.delete()
+    return {"Success": f"User {user.username} deleted"}, 200
