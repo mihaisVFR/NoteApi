@@ -47,6 +47,8 @@ def get_notes():
 #     if result:
 #         return result, 200
 #     return {"Error": "Not found"}, 404
+
+
 @app.route("/tags", methods=["POST"])
 @multi_auth.login_required
 def create_tag():
@@ -57,6 +59,7 @@ def create_tag():
     print(tag_data)
     tag.save()
     return tag_schema.dump(tag), 201
+
 
 @app.route("/notes/<int:note_id>/tags", methods=["PUT"])
 @multi_auth.login_required
@@ -74,6 +77,20 @@ def add_tags_to_note(note_id):
         return note_schema.dump(note), 200
     return {"Error": "This note can't be showed, because it owned other person"}, 403
 
+@app.route("/notes/search", methods=["GET"])
+@multi_auth.login_required
+def get_notes_by_tags():
+    args = request.args
+    tags = args.getlist("tag", type=str)
+    user = multi_auth.current_user()
+    notes = NoteModel.query.filter(
+        or_(NoteModel.author_id == user.id, NoteModel.private == False))
+
+    # Не разобрался как запросить все заметки с определенными тэгами
+
+    return None, 200
+
+
 @app.route("/notes/my_notes", methods=["GET"])
 @multi_auth.login_required
 def get_my_notes():
@@ -81,11 +98,13 @@ def get_my_notes():
     notes = NoteModel.query.filter(NoteModel.author_id == user.id)
     return notes_schema.dump(notes), 200
 
+
 @app.route("/notes/public", methods=["GET"])
 @multi_auth.login_required
 def public_notes():
     notes = NoteModel.query.filter(NoteModel.private == False)
     return notes_schema.dump(notes), 200
+
 
 @app.route("/notes", methods=["POST"])
 @multi_auth.login_required
