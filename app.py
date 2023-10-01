@@ -1,4 +1,4 @@
-from api import app, docs
+from api import app, docs, db
 from config import Config
 from api.handlers import auth, note, user
 
@@ -8,6 +8,7 @@ from api.handlers import auth, note, user
 # Read --> GET
 # Update --> PUT
 # Delete --> DELETE
+
 docs.register(user.get_user_by_id)
 
 if __name__ == '__main__':

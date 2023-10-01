@@ -14,7 +14,7 @@ class NoteSchema(ma.SQLAlchemySchema):
     text = ma.auto_field()
     private = ma.auto_field()
     author = ma.Nested(UserSchema())
-    category = ma.auto_field()
+    tags = ma.auto_field()
 
 note_schema = NoteSchema()
 notes_schema = NoteSchema(many=True)
