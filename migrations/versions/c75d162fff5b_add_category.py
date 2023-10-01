@@ -1,8 +1,8 @@
-"""init
+"""add category
 
-Revision ID: d1a4dd9fabe4
+Revision ID: c75d162fff5b
 Revises: 
-Create Date: 2022-12-07 20:28:24.036258
+Create Date: 2023-10-01 15:48:41.577160
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'd1a4dd9fabe4'
+revision = 'c75d162fff5b'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -31,6 +31,7 @@ def upgrade():
     sa.Column('author_id', sa.Integer(), nullable=True),
     sa.Column('text', sa.String(length=255), nullable=False),
     sa.Column('private', sa.Boolean(), nullable=False),
+    sa.Column('category', sa.String(length=255), server_default='No_tags', nullable=False),
     sa.ForeignKeyConstraint(['author_id'], ['user_model.id'], ),
     sa.PrimaryKeyConstraint('id')
     )

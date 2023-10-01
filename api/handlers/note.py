@@ -3,8 +3,8 @@ from api.models.note import NoteModel
 from api.schemas.note import note_schema, notes_schema
 from utility.helpers import get_object_or_404
 from sqlalchemy import or_
-
-
+from flask import  request
+import pprint
 @app.route("/notes/<int:note_id>", methods=["GET"])
 @multi_auth.login_required
 def get_note_by_id(note_id):
@@ -28,10 +28,28 @@ def get_notes():
 
     return notes_schema.dump(notes), 200
 
+@app.route("/notes/category", methods=["GET"])
+@multi_auth.login_required
+def get_notes_by_category():
+    args = request.args
+    categorys = args.getlist("category", type=str)
+    user = multi_auth.current_user()
+    notes = NoteModel.query.filter(or_(NoteModel.author_id == user.id,
+                                      NoteModel.private == False))
+    json = notes_schema.dump(notes)
+    result = []
+    for note in json:
+        for category in categorys:
+            if category in note["category"]:
+                result.append(note)
+    if result:
+        return result, 200
+    return {"Error": "Not found"}, 404
+
+
 @app.route("/notes/my_notes", methods=["GET"])
 @multi_auth.login_required
 def get_my_notes():
-    # DONE: авторизованный пользователь получает только свои заметки и публичные заметки других пользователей
     user = multi_auth.current_user()
     notes = NoteModel.query.filter(NoteModel.author_id == user.id)
     return notes_schema.dump(notes), 200
@@ -39,8 +57,6 @@ def get_my_notes():
 @app.route("/notes/public", methods=["GET"])
 @multi_auth.login_required
 def public_notes():
-    # DONE: авторизованный пользователь получает только свои заметки и публичные заметки других пользователей
-    user = multi_auth.current_user()
     notes = NoteModel.query.filter(NoteModel.private == False)
     return notes_schema.dump(notes), 200
 
