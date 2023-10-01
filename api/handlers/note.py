@@ -28,6 +28,21 @@ def get_notes():
 
     return notes_schema.dump(notes), 200
 
+@app.route("/notes/my_notes", methods=["GET"])
+@multi_auth.login_required
+def get_my_notes():
+    # DONE: авторизованный пользователь получает только свои заметки и публичные заметки других пользователей
+    user = multi_auth.current_user()
+    notes = NoteModel.query.filter(NoteModel.author_id == user.id)
+    return notes_schema.dump(notes), 200
+
+@app.route("/notes/public", methods=["GET"])
+@multi_auth.login_required
+def public_notes():
+    # DONE: авторизованный пользователь получает только свои заметки и публичные заметки других пользователей
+    user = multi_auth.current_user()
+    notes = NoteModel.query.filter(NoteModel.private == False)
+    return notes_schema.dump(notes), 200
 
 @app.route("/notes", methods=["POST"])
 @multi_auth.login_required
