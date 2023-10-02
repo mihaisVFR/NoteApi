@@ -8,6 +8,7 @@
 1. Запуск: pytest -v tests
 
 ### Реализовано ТЗ
+
 Основные возможности:
 
 - [x] Регистрация пользователя.
@@ -32,3 +33,4 @@
 
 ## Полезное
 1. Статья о связях many-to-many в flask sqlalchemy https://ploshadka.net/sqlalchemy-many-to-many/
+2. Коллекция запросов Postman находится в дирректории PosnmanCollection
