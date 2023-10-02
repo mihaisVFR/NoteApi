@@ -7,16 +7,6 @@ from utility.helpers import get_object_or_404
 from sqlalchemy import or_
 
 
-@app.route("/notes/<int:note_id>", methods=["GET"])
-@multi_auth.login_required
-def get_note_by_id(note_id):
-    user = multi_auth.current_user()
-    note = get_object_or_404(NoteModel, note_id)
-    if note.author_id == user.id or not note.private:
-        return note_schema.dump(note), 200
-    return {"Error": "This note can't be showed, because it owned other person"}, 403
-
-
 @app.route("/tags", methods=["POST"])
 @multi_auth.login_required
 def create_tag():
@@ -68,6 +58,16 @@ def add_tags_to_note(note_id):
             tag_object = get_object_or_404(Tag, tag)
             note.tags.append(tag_object)
             note.save()
+        return note_schema.dump(note), 200
+    return {"Error": "This note can't be showed, because it owned other person"}, 403
+
+
+@app.route("/notes/<int:note_id>", methods=["GET"])
+@multi_auth.login_required
+def get_note_by_id(note_id):
+    user = multi_auth.current_user()
+    note = get_object_or_404(NoteModel, note_id)
+    if note.author_id == user.id or not note.private:
         return note_schema.dump(note), 200
     return {"Error": "This note can't be showed, because it owned other person"}, 403
 
