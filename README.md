@@ -33,5 +33,5 @@
 
 ## Полезное
 1. Статья о связях many-to-many в flask sqlalchemy https://ploshadka.net/sqlalchemy-many-to-many/
-2. Более наглядные автотесты `pipenv install coverage``coverage run -m pytest ./tests/`
+2. Более наглядные автотесты `pipenv install coverage``coverage run -m pytest ./tests/``coverage html`
 3. Документация `pipenv install apispec`,`pipenv install flask-apispec`
