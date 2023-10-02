@@ -9,7 +9,7 @@ note_tag = db.Table('note_tag',
 class Tag(db.Model):
     __tablename__ = 'tag'
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(50))
+    name = db.Column(db.String(50), unique=True)
     user = db.Column(db.Integer)
 
     def save(self):

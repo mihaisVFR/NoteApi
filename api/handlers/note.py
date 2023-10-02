@@ -1,9 +1,10 @@
-from api import app, multi_auth, request
-from api.models.note import NoteModel, Tag
+from api import app, multi_auth, request, db
+from api.models.note import NoteModel
+from api.models.tags import Tag, note_tag
 from api.schemas.note import note_schema, notes_schema
 from api.schemas.tags import tag_schema, tags_schema
 from utility.helpers import get_object_or_404
-from sqlalchemy import or_
+from sqlalchemy import or_, and_
 import pprint
 
 
@@ -29,24 +30,6 @@ def get_notes():
         or_(NoteModel.author_id == user.id, NoteModel.private == False))
 
     return notes_schema.dump(notes), 200
-
-# @app.route("/notes/category", methods=["GET"])
-# @multi_auth.login_required
-# def get_notes_by_category():
-#     args = request.args
-#     categorys = args.getlist("category", type=str)
-#     user = multi_auth.current_user()
-#     notes = NoteModel.query.filter(or_(NoteModel.author_id == user.id,
-#                                       NoteModel.private == False))
-#     json = notes_schema.dump(notes)
-#     result = []
-#     for note in json:
-#         for category in categorys:
-#             if category in note["category"]:
-#                 result.append(note)
-#     if result:
-#         return result, 200
-#     return {"Error": "Not found"}, 404
 
 
 @app.route("/tags", methods=["POST"])
@@ -85,10 +68,23 @@ def get_notes_by_tags():
     user = multi_auth.current_user()
     notes = NoteModel.query.filter(
         or_(NoteModel.author_id == user.id, NoteModel.private == False))
+    notes_result = []
+    # Получаем список тэгов
+    for tag in tags:
 
-    # Не разобрался как запросить все заметки с определенными тэгами
+        tag_object = Tag.query.filter_by(name=tag).first()
 
-    return None, 200
+        # Получим все зависимости
+        dependencies = db.session.query(note_tag).filter_by(tag_id=tag_object.id).all()
+        # Получим заметки по id тэгов используя полученные зависимости
+        for dependence in dependencies:
+            note = notes.filter_by(id=dependence.note_id).first()
+            serialized_note = note_schema.dump(note)
+            if serialized_note not in notes_result:
+                notes_result.append(serialized_note)
+
+    return notes_result, 200
+
 
 
 @app.route("/notes/my_notes", methods=["GET"])
