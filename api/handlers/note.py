@@ -10,8 +10,6 @@ from sqlalchemy import or_
 @app.route("/notes/<int:note_id>", methods=["GET"])
 @multi_auth.login_required
 def get_note_by_id(note_id):
-    # DONE: авторизованный пользователь может получить только свою заметку или публичную заметку других пользователей
-    #  Попытка получить чужую приватную заметку, возвращает ответ с кодом 403
     user = multi_auth.current_user()
     note = get_object_or_404(NoteModel, note_id)
     if note.author_id == user.id or not note.private:
@@ -100,7 +98,6 @@ def get_my_notes():
 @app.route("/notes", methods=["GET"])
 @multi_auth.login_required
 def get_notes():
-    # DONE: авторизованный пользователь получает только свои заметки и публичные заметки других пользователей
     user = multi_auth.current_user()
     notes = NoteModel.query.filter(
         or_(NoteModel.author_id == user.id, NoteModel.private == False))
@@ -129,7 +126,6 @@ def create_note():
 @multi_auth.login_required
 def delete_note(note_id):
     user = multi_auth.current_user()
-
     note = get_object_or_404(NoteModel, note_id)
     if note.author_id == user.id:
         note.delete()
