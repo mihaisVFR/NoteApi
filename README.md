@@ -2,7 +2,7 @@
 1. Установить `pipenv sudo apt update`, `apt install pipenv`
 2. Создать виртуальное окружение и установить зависимости: `pipenv sync`
 3.  Запустить виртуальное окружение: `pipenv shell`
-4. Миграции, Создание локальной БД `flask db upgrade` (Доп команды: flask db init, flask db migrate -m "new db"",)
+4. Миграции, Создание локальной БД `flask db upgrade` (Доп команды: flask db init, flask db migrate -m "new",)
 
 ## Автотесты
 1. Запуск: `pytest -v tests`
