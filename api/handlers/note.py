@@ -27,12 +27,11 @@ def get_notes_by_tags():
     user = multi_auth.current_user()
     notes = NoteModel.query.filter(
         or_(NoteModel.author_id == user.id, NoteModel.private == False))
+    # sqlalchemy не понимает оператор is в запросах, если NoteModel.private is False не отработает
     notes_result = []
     # Получаем список тэгов
     for tag in tags:
-
         tag_object = Tag.query.filter_by(name=tag).first()
-
         # Получим все зависимости
         dependencies = db.session.query(note_tag).filter_by(tag_id=tag_object.id).all()
         # Получим заметки по id тэгов используя полученные зависимости
@@ -101,14 +100,14 @@ def get_notes():
     user = multi_auth.current_user()
     notes = NoteModel.query.filter(
         or_(NoteModel.author_id == user.id, NoteModel.private == False))
-
+    # sqlalchemy не понимает оператор is в запросах, если NoteModel.private is False не отработает
     return notes_schema.dump(notes), 200
 
 
 @app.route("/notes/public", methods=["GET"])
 @multi_auth.login_required
 def public_notes():
-    notes = NoteModel.query.filter(NoteModel.private == False)
+    notes = NoteModel.query.filter_by(private=False)
     return notes_schema.dump(notes), 200
 
 

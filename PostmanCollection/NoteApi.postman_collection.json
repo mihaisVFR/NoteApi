@@ -137,7 +137,17 @@
 					"name": "Get_public_notes",
 					"request": {
 						"method": "GET",
-						"header": []
+						"header": [],
+						"url": {
+							"raw": "{{url}}/notes/public",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"notes",
+								"public"
+							]
+						}
 					},
 					"response": []
 				},
@@ -177,7 +187,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"name\": \"wood\"\n}",
+							"raw": "{\n    \"name\": \"good\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -214,7 +224,7 @@
 							}
 						},
 						"url": {
-							"raw": "{{url}}/notes/search?tag=food&tag=good",
+							"raw": "{{url}}/notes/search?tag=food&tag=wood",
 							"host": [
 								"{{url}}"
 							],
@@ -229,7 +239,7 @@
 								},
 								{
 									"key": "tag",
-									"value": "good"
+									"value": "wood"
 								}
 							]
 						}
