@@ -3,7 +3,7 @@
 2. Создать виртуальное окружение и установить зависимости: `pipenv sync`
 3.  Запустить виртуальное окружение: `pipenv shell`
 4. Миграции, Создание локальной БД `flask db upgrade` (Доп команды: flask db init, flask db migrate -m "new")
-
+5. Коллекция запросов Postman находится в дирректории PosnmanCollection
 ## Автотесты
 1. Запуск: `pytest -v tests`
 
@@ -33,4 +33,5 @@
 
 ## Полезное
 1. Статья о связях many-to-many в flask sqlalchemy https://ploshadka.net/sqlalchemy-many-to-many/
-2. Коллекция запросов Postman находится в дирректории PosnmanCollection
+2. Более наглядные автотесты `pipenv install coverege`
+3. Документация `pipenv install apispec`,`pipenv install flask-apispec`

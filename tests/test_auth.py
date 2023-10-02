@@ -11,8 +11,7 @@ def test_basic_auth(client, auth_headers, user_admin):
     assert data["token"] == user_admin.generate_auth_token()
 
 
-def test_token_auth(client, auth_headers_token, auth_headers):
-    client.get('/auth/token', headers=auth_headers)
+def test_token_auth(client, auth_headers_token):
     response = client.get('/auth/token', headers=auth_headers_token)
     assert response.status_code == 200
 
