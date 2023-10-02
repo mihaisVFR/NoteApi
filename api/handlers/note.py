@@ -2,10 +2,9 @@ from api import app, multi_auth, request, db
 from api.models.note import NoteModel
 from api.models.tags import Tag, note_tag
 from api.schemas.note import note_schema, notes_schema
-from api.schemas.tags import tag_schema, tags_schema
+from api.schemas.tags import tag_schema
 from utility.helpers import get_object_or_404
-from sqlalchemy import or_, and_
-import pprint
+from sqlalchemy import or_
 
 
 @app.route("/notes/<int:note_id>", methods=["GET"])
@@ -20,18 +19,6 @@ def get_note_by_id(note_id):
     return {"Error": "This note can't be showed, because it owned other person"}, 403
 
 
-
-@app.route("/notes", methods=["GET"])
-@multi_auth.login_required
-def get_notes():
-    # DONE: авторизованный пользователь получает только свои заметки и публичные заметки других пользователей
-    user = multi_auth.current_user()
-    notes = NoteModel.query.filter(
-        or_(NoteModel.author_id == user.id, NoteModel.private == False))
-
-    return notes_schema.dump(notes), 200
-
-
 @app.route("/tags", methods=["POST"])
 @multi_auth.login_required
 def create_tag():
@@ -43,22 +30,6 @@ def create_tag():
     tag.save()
     return tag_schema.dump(tag), 201
 
-
-@app.route("/notes/<int:note_id>/tags", methods=["PUT"])
-@multi_auth.login_required
-def add_tags_to_note(note_id):
-    # DONE назначение категорий заметкам
-    args = request.args
-    tags = args.getlist("tags", type=int)
-    user = multi_auth.current_user()
-    note = get_object_or_404(NoteModel, note_id)
-    if note.author_id == user.id or not note.private:
-        for tag in tags:
-            tag_object = get_object_or_404(Tag, tag)
-            note.tags.append(tag_object)
-            note.save()
-        return note_schema.dump(note), 200
-    return {"Error": "This note can't be showed, because it owned other person"}, 403
 
 @app.route("/notes/search", methods=["GET"])
 @multi_auth.login_required
@@ -86,12 +57,54 @@ def get_notes_by_tags():
     return notes_result, 200
 
 
+@app.route("/notes/<int:note_id>/tags", methods=["PUT"])
+@multi_auth.login_required
+def add_tags_to_note(note_id):
+    # DONE назначение категорий заметкам
+    args = request.args
+    tags = args.getlist("tags", type=int)
+    user = multi_auth.current_user()
+    note = get_object_or_404(NoteModel, note_id)
+    if note.author_id == user.id or not note.private:
+        for tag in tags:
+            tag_object = get_object_or_404(Tag, tag)
+            note.tags.append(tag_object)
+            note.save()
+        return note_schema.dump(note), 200
+    return {"Error": "This note can't be showed, because it owned other person"}, 403
+
+
+@app.route("/notes/<int:note_id>", methods=["PUT"])
+@multi_auth.login_required
+def edit_note(note_id):
+    user = multi_auth.current_user()
+
+    note = get_object_or_404(NoteModel, note_id)
+    if note.author_id == user.id:
+        note_data = request.json
+        note.text = note_data["text"]
+        note.private = note_data.get("private") or note.private
+        note.save()
+        return note_schema.dump(note), 200
+    return {"Error": "This note can't be changed, because it owned other person"}, 403
+
 
 @app.route("/notes/my_notes", methods=["GET"])
 @multi_auth.login_required
 def get_my_notes():
     user = multi_auth.current_user()
     notes = NoteModel.query.filter(NoteModel.author_id == user.id)
+    return notes_schema.dump(notes), 200
+
+
+@app.route("/notes", methods=["GET"])
+@multi_auth.login_required
+def get_notes():
+    # DONE: авторизованный пользователь получает только свои заметки и публичные заметки других пользователей
+    user = multi_auth.current_user()
+    notes = NoteModel.query.filter(
+        or_(NoteModel.author_id == user.id, NoteModel.private == False))
+
     return notes_schema.dump(notes), 200
 
 
@@ -112,21 +125,6 @@ def create_note():
     return note_schema.dump(note), 201
 
 
-@app.route("/notes/<int:note_id>", methods=["PUT"])
-@multi_auth.login_required
-def edit_note(note_id):
-    user = multi_auth.current_user()
-
-    note = get_object_or_404(NoteModel, note_id)
-    if note.author_id == user.id:
-        note_data = request.json
-        note.text = note_data["text"]
-        note.private = note_data.get("private") or note.private
-        note.save()
-        return note_schema.dump(note), 200
-    return {"Error": "This note can't be changed, because it owned other person"}, 403
-
-
 @app.route("/notes/<int:note_id>", methods=["DELETE"])
 @multi_auth.login_required
 def delete_note(note_id):
@@ -137,4 +135,3 @@ def delete_note(note_id):
         note.delete()
         return {"Success": f"Note with id={note_id} has deleted"}, 200
     return {"Error": "This note can't be deleted, because it owned other person"}, 403
-
