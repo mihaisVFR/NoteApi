@@ -18,7 +18,7 @@ class UserRequestSchema(ma.SQLAlchemySchema):
         model =UserModel
 
     username = ma.Str(required=True)
-    password = ma.Str(required=True)
+    password = ma.Str()
     role = ma.Str()
 
 
