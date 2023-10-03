@@ -1,12 +1,11 @@
 import os
-
-os.environ["DATABASE_URI"] = 'sqlite:///:memory:'
 from api import db
 from app import app
 from base64 import b64encode
 from api.models.user import UserModel
 import pytest
 
+os.environ["DATABASE_URI"] = 'sqlite:///:memory:'
 
 @pytest.fixture()
 def application():

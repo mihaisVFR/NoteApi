@@ -1,72 +1,52 @@
 from api import app, request, multi_auth
 from api.models.user import UserModel
-from api.schemas.user import user_schema, users_schema
+from api.schemas.user import user_schema, users_schema, UserSchema, UserRequestSchema
 from utility.helpers import get_object_or_404
+from flask_apispec import doc, marshal_with, use_kwargs
 
 
 @app.route("/users/<int:user_id>")
+@doc(description='Api for one user', tags=['Users'], summary="Get user by id")
+@marshal_with(UserSchema, code=200)
 def get_user_by_id(user_id):
-    """
-    Get User by id
-    ---
-    tags:
-        - Users
-    parameters:
-         - in: path
-           name: user_id
-           type: integer
-           required: true
-           default: 1
-
-    responses:
-        200:
-            description: A single user item
-            schema:
-                id: User
-                properties:
-                    id:
-                        type: integer
-                    username:
-                        type: string
-                    is_staff:
-                        type: boolean
-    """
     user = get_object_or_404(UserModel, user_id)
     if user is None:
         return {"error": "User not found"}, 404
-    return user_schema.dump(user), 200
+    return user, 200
 
 
 @app.route("/users")
+@doc(description='Api for all users', tags=['Users'], summary="Get all users")
+@marshal_with(UserSchema(many=True), code=200)
 def get_users():
-    """
-        Get all users
-        ---
-        tags:
-            - Users
-        """
     users = UserModel.query.all()
     return users_schema.dump(users), 200
 
 
 @app.route("/users", methods=["POST"])
-def create_user():
-    user_data = request.json
-    user = UserModel(**user_data)
+@doc(description='Api for one user', tags=['Users'], summary="Create user")
+@marshal_with(UserSchema, code=201)
+@use_kwargs(UserRequestSchema, location="json")
+def create_user(**kwargs):
+    # user_data = request.json
+    # user = UserModel(**user_data)
+    user = UserModel(**kwargs)
     if UserModel.query.filter_by(username=user.username).one_or_none():
         return {"error": "User already exist"}, 409
     user.save()
-    return user_schema.dump(user), 201
+    return user, 201
 
 
 @app.route("/users/<int:user_id>", methods=["PUT"])
+@marshal_with(UserSchema, code=200)
+#@use_kwargs(UserRequestSchema, location="json")
 @multi_auth.login_required(role="admin")
 def edit_user(user_id):
     user_data = request.json
     user = get_object_or_404(UserModel, user_id)
     user.username = user_data["username"]
     user.save()
-    return user_schema.dump(user), 200
+    return user, 200
 
 
 @app.route("/users/<int:user_id>", methods=["DELETE"])
