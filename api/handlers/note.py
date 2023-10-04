@@ -4,7 +4,7 @@ from api.models.tags import Tag, note_tag
 from api.schemas.note import note_schema, notes_schema
 from api.schemas.tags import tag_schema
 from utility.helpers import get_object_or_404
-from sqlalchemy import or_
+from sqlalchemy import or_, and_
 
 
 @app.route("/tags", methods=["POST"])
@@ -22,12 +22,12 @@ def create_tag():
 @app.route("/notes/search", methods=["GET"])
 @multi_auth.login_required
 def get_notes_by_tags():
+    """Возвращает заметки по тэгу"""
     args = request.args
     tags = args.getlist("tag", type=str)
     user = multi_auth.current_user()
     notes = NoteModel.query.filter(
         or_(NoteModel.author_id == user.id, NoteModel.private == False))
-    # sqlalchemy не понимает оператор is в запросах, NoteModel.private is False не отработает
     notes_result = []
     # Получаем тэги исходя из запроса
     for tag in tags:
@@ -42,6 +42,27 @@ def get_notes_by_tags():
                 notes_result.append(serialized_note)
 
     return notes_result, 200
+
+@app.route("/notes/filter", methods=["GET"])
+@multi_auth.login_required
+def notes_filter_by_args():
+    """Возвращает результат поиска по тэгу для авторизованного пользователя
+     и публичные цытаты для запрошенного пользователя"""
+    args = request.args
+    arg_teg = args.get("tag", type=str)
+    arg_user = args.get("username", type=str)
+    user = multi_auth.current_user()
+    if arg_teg:
+        notes = NoteModel.query.filter(
+            and_(NoteModel.author_id == user.id, NoteModel.tags.any(name=arg_teg)))
+        return notes_schema.dump(notes)
+    elif arg_user:
+
+        notes = NoteModel.query.filter(
+            and_(NoteModel.author.has(username=arg_user), NoteModel.private == False))
+        return notes_schema.dump(notes)
+    else:
+        return {"Error": "Search request not found"}, 404
 
 
 @app.route("/notes/<int:note_id>/tags", methods=["PUT"])
@@ -69,6 +90,16 @@ def get_note_by_id(note_id):
     if note.author_id == user.id or not note.private:
         return note_schema.dump(note), 200
     return {"Error": "This note can't be showed, because it owned other person"}, 403
+
+
+@app.route("/users/<user_id>/notes", methods=["GET"])
+def get_note_by_user_id(user_id):
+    """Обработчик для всех заметок пользователя, Авторизация не требуется"""
+    notes = NoteModel.query.filter(NoteModel.author_id == user_id).all()
+    if notes:
+        return notes_schema.dump(notes), 200
+    return {"Error": "This note can't be showed, because it owned other person"}, 403
+
 
 
 @app.route("/notes/<int:note_id>", methods=["PUT"])
@@ -99,7 +130,6 @@ def get_notes():
     user = multi_auth.current_user()
     notes = NoteModel.query.filter(
         or_(NoteModel.author_id == user.id, NoteModel.private == False))
-    # sqlalchemy не понимает оператор is в запросах, NoteModel.private is False не отработает
     return notes_schema.dump(notes), 200
 
 
