@@ -1,4 +1,4 @@
-from api import app, multi_auth,basic_auth
+from api import app, multi_auth, basic_auth
 
 
 @app.route('/auth/token')

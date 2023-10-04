@@ -37,7 +37,11 @@
 - [x] Поиск всех заметок авторизованного пользователя, у которых есть указанный тег
 - [x] Поиск всех публичных заметок, пользователя из query параметров
 
+### Документация
+- [x] Добавлены все обработчики в документацию
+- [x] Все функции обернуты в декораторы @marshal_with и @use_kwargs 
+- [x] Перенесены все настройки swagger __init__.py → config.py
+
 ## Полезное
-1. Статья о связях many-to-many в flask sqlalchemy https://ploshadka.net/sqlalchemy-many-to-many/
-2. Более наглядные автотесты `pipenv install coverage``coverage run -m pytest ./tests/``coverage html`
-3. Документация `pipenv install apispec`,`pipenv install flask-apispec`
+1. Более наглядные автотесты `pipenv install coverage``coverage run -m pytest ./tests/``coverage html`
+2. Документация `pipenv install apispec`,`pipenv install flask-apispec`

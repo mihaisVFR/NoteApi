@@ -152,28 +152,24 @@
 					"response": []
 				},
 				{
-					"name": "add_tags_to_note",
+					"name": "add_tag_to_note",
 					"request": {
 						"method": "PUT",
 						"header": [],
 						"url": {
-							"raw": "{{url}}/notes/2/tags?tags=1&tags=2",
+							"raw": "{{url}}/notes/7/tag?tag=1",
 							"host": [
 								"{{url}}"
 							],
 							"path": [
 								"notes",
-								"2",
-								"tags"
+								"7",
+								"tag"
 							],
 							"query": [
 								{
-									"key": "tags",
+									"key": "tag",
 									"value": "1"
-								},
-								{
-									"key": "tags",
-									"value": "2"
 								}
 							]
 						}
@@ -240,6 +236,85 @@
 								{
 									"key": "tag",
 									"value": "wood"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get_notes_by_user",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/users/1/notes",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"users",
+								"1",
+								"notes"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "user_notes_by_tag",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/notes/filter?tag=good",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"notes",
+								"filter"
+							],
+							"query": [
+								{
+									"key": "tag",
+									"value": "good"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get public user notes",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/notes/filter?username=admin",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"notes",
+								"filter"
+							],
+							"query": [
+								{
+									"key": "username",
+									"value": "admin"
 								}
 							]
 						}
@@ -462,19 +537,7 @@
 				}
 			],
 			"auth": {
-				"type": "basic",
-				"basic": [
-					{
-						"key": "password",
-						"value": "admin",
-						"type": "string"
-					},
-					{
-						"key": "username",
-						"value": "admin",
-						"type": "string"
-					}
-				]
+				"type": "bearer"
 			},
 			"event": [
 				{

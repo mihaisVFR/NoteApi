@@ -11,5 +11,13 @@ class TagSchema(ma.SQLAlchemySchema):
     user = ma.auto_field()
 
 
+class TagRequestSchema(ma.SQLAlchemySchema):
+    class Meta:
+        model = Tag
+
+    name = ma.Str()
+    user = ma.Int()
+
+
 tag_schema = TagSchema()
 tags_schema = TagSchema(many=True)

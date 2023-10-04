@@ -6,6 +6,7 @@ note_tag = db.Table('note_tag',
                     db.Column('tag_id', db.Integer, db.ForeignKey("tag.id")),
                     )
 
+
 class Tag(db.Model):
     __tablename__ = 'tag'
     id = db.Column(db.Integer, primary_key=True)

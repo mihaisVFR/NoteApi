@@ -1,6 +1,6 @@
 from api import app, request, multi_auth
 from api.models.user import UserModel
-from api.schemas.user import user_schema, users_schema, UserSchema, UserRequestSchema
+from api.schemas.user import UserSchema, UserRequestSchema
 from utility.helpers import get_object_or_404
 from flask_apispec import doc, marshal_with, use_kwargs
 
@@ -20,7 +20,7 @@ def get_user_by_id(user_id):
 @marshal_with(UserSchema(many=True), code=200)
 def get_users():
     users = UserModel.query.all()
-    return users_schema.dump(users), 200
+    return users, 200
 
 
 @app.route("/users", methods=["POST"])

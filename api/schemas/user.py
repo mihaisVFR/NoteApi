@@ -15,7 +15,7 @@ class UserSchema(ma.SQLAlchemySchema):
 
 class UserRequestSchema(ma.SQLAlchemySchema):
     class Meta:
-        model =UserModel
+        model = UserModel
 
     username = ma.Str(required=True)
     password = ma.Str()
@@ -24,4 +24,3 @@ class UserRequestSchema(ma.SQLAlchemySchema):
 
 user_schema = UserSchema()
 users_schema = UserSchema(many=True)
-
